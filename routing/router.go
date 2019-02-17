@@ -3,19 +3,23 @@ package routing
 import (
 	"net/http"
 
+	"github.com/caeret/golang-web-skeleton/service"
+
 	"github.com/caeret/golang-web-skeleton/app"
 	routing "github.com/go-ozzo/ozzo-routing"
 )
 
-func Serve(logger app.Logger, container app.Container) {
+func Serve(logger app.Logger) {
+	userService := &service.UserService{}
+	userCtl := &UserCTL{
+		userService: userService,
+	}
+
 	router := routing.New()
 	router.Use(
-		app.RoutePrepare(logger, container),
+		app.RoutePrepare(logger),
 	)
-	router.Get("/", func(c *routing.Context) error {
-		panic("")
-		return c.Write(app.GetRequestScope(c).RequestID())
-	})
+	router.Post("/users", userCtl.CreateUser)
 	logger.Info("serve http server.")
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {

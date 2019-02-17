@@ -1,10 +1,20 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/caeret/golang-web-skeleton/app"
 	"github.com/caeret/golang-web-skeleton/routing"
-	"github.com/inconshreveable/log15"
 )
 
 func main() {
-	routing.Serve(log15.New(), nil)
+	if err := app.LoadConfig(); err != nil {
+		panic(fmt.Errorf("fail to load config: %s", err))
+	}
+	logger := app.NewLogger()
+	if err := app.InitDB(); err != nil {
+		panic(fmt.Errorf("fail to init db: %s", err))
+	}
+
+	routing.Serve(logger)
 }
