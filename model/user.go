@@ -1,7 +1,7 @@
 package model
 
 type User struct {
-	ID           string `json:"id"`
+	ID           int    `json:"id" xorm:"pk autoincr"`
 	Name         string `json:"name"`
 	PasswordHash []byte `json:"-"`
 }
