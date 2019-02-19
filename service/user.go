@@ -17,7 +17,7 @@ func (s *UserService) Create(rs app.RequestScope, request request.CreateUser) (u
 		return
 	}
 	if exist {
-		err = code.NewAPIError("USER_EXIST")
+		err = code.NewAPIError(code.UserExist)
 		return
 	}
 	user.Name = request.Name

@@ -16,7 +16,7 @@ func (ctl *UserCTL) CreateUser(c *routing.Context) error {
 	var req request.CreateUser
 	err := c.Read(&req)
 	if err != nil {
-		return code.NewAPIError("INVALID_DATA").WithDetails(err)
+		return code.NewAPIError(code.InvalidData).WithDetails(err)
 	}
 	user, err := ctl.userService.Create(scope.GetRequestScope(c), req)
 	if err != nil {
