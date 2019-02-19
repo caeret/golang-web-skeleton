@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/caeret/golang-web-skeleton/resource"
+	"github.com/caeret/golang-web-skeleton/transport/http"
 
 	"github.com/caeret/golang-web-skeleton/app"
-	"github.com/caeret/golang-web-skeleton/routing"
+	"github.com/caeret/golang-web-skeleton/resource"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	}
 	logger := app.NewLogger()
 	logger.Info("config loaded.", "config", app.Config)
-	if err := app.InitDB(); err != nil {
+	if err := app.InitDB(logger); err != nil {
 		logger.Crit("fail to init db.", "error", err)
 		os.Exit(1)
 	}
@@ -28,5 +28,8 @@ func main() {
 		logger.Info("db migrated.", "n", n)
 	}
 
-	routing.Serve(logger)
+	if err := http.Serve(logger); err != nil {
+		logger.Crit("fail to serve http server.", "error", err)
+		os.Exit(1)
+	}
 }

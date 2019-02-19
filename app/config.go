@@ -9,8 +9,9 @@ import (
 var Config config
 
 type config struct {
-	Debug bool
-	DSN   string
+	Debug    bool
+	DSN      string
+	HttpAddr string `mapstructure:"http_addr"`
 }
 
 func LoadConfig() error {
@@ -36,4 +37,5 @@ func LoadConfig() error {
 func initConfigDefaults(v *viper.Viper) {
 	v.SetDefault("debug", false)
 	v.SetDefault("dsn", "root:root@tcp(mysql:3306)/skeleton?charset=utf8mb4")
+	v.SetDefault("http_addr", ":8080")
 }

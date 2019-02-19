@@ -1,24 +1,21 @@
-package routing
+package http
 
 import (
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/caeret/golang-web-skeleton/routing/scope"
-
+	"github.com/caeret/golang-web-skeleton/app"
 	"github.com/caeret/golang-web-skeleton/code"
+	"github.com/caeret/golang-web-skeleton/service"
+	"github.com/caeret/golang-web-skeleton/transport/http/scope"
+	routing "github.com/go-ozzo/ozzo-routing"
 	"github.com/go-ozzo/ozzo-routing/access"
 	"github.com/go-ozzo/ozzo-routing/content"
 	"github.com/go-ozzo/ozzo-routing/fault"
-
-	"github.com/caeret/golang-web-skeleton/service"
-
-	"github.com/caeret/golang-web-skeleton/app"
-	routing "github.com/go-ozzo/ozzo-routing"
 )
 
-func Serve(logger app.Logger) {
+func Serve(logger app.Logger) error {
 	userService := &service.UserService{}
 	userCtl := &UserCTL{
 		userService: userService,
@@ -30,10 +27,8 @@ func Serve(logger app.Logger) {
 	)
 	router.Post("/users", userCtl.CreateUser)
 	logger.Info("serve http server.")
-	err := http.ListenAndServe(":8080", router)
-	if err != nil {
-		panic(err)
-	}
+	err := http.ListenAndServe(app.Config.HttpAddr, router)
+	return err
 }
 
 func prepare(logger app.Logger) routing.Handler {

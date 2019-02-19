@@ -1,10 +1,10 @@
-package routing
+package http
 
 import (
 	"github.com/caeret/golang-web-skeleton/code"
 	"github.com/caeret/golang-web-skeleton/request"
-	"github.com/caeret/golang-web-skeleton/routing/scope"
 	"github.com/caeret/golang-web-skeleton/service"
+	"github.com/caeret/golang-web-skeleton/transport/http/scope"
 	routing "github.com/go-ozzo/ozzo-routing"
 )
 
