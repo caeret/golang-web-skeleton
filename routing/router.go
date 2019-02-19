@@ -43,9 +43,7 @@ func prepare(logger app.Logger) routing.Handler {
 		c.Response = &access.LogResponseWriter{c.Response, http.StatusOK, 0}
 		rs := scope.NewRequestScope(now, logger, c.Request)
 		c.Set("Context", rs)
-		_ = fault.Recovery(func(format string, a ...interface{}) {
-			rs.Crit(fmt.Sprintf(format, a...))
-		}, convertError(rs))(c)
+		_ = fault.Recovery(nil, convertError(rs))(c)
 		logAccess(c, func(format string, a ...interface{}) {
 			rs.Info(fmt.Sprintf(format, a...))
 		}, rs.Now())
@@ -62,12 +60,23 @@ func logAccess(c *routing.Context, logFunc access.LogFunc, start time.Time) {
 
 func convertError(logger app.Logger) func(*routing.Context, error) error {
 	return func(c *routing.Context, err error) error {
-		switch err.(type) {
-		case *code.APIError, code.APIError:
-			return err
+		switch e := err.(type) {
+		case *code.APIError:
+			return HTTPError{http.StatusBadRequest, e}
+		case routing.HTTPError:
+			return HTTPError{e.StatusCode(), code.NewAPIError(code.UnsupportedRequest)}
 		default:
 			logger.Crit("unknown error.", "error", fmt.Sprintf("%+v", err))
-			return code.NewAPIError("INTERNAL_SERVER_ERROR")
+			return HTTPError{http.StatusInternalServerError, code.NewAPIError(code.InternalServerError)}
 		}
 	}
+}
+
+type HTTPError struct {
+	status int
+	*code.APIError
+}
+
+func (e HTTPError) StatusCode() int {
+	return e.status
 }
